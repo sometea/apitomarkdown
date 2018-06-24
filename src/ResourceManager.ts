@@ -9,7 +9,8 @@ export class ResourceManager {
     }
 
     private writeFile(fileNameWithPath: string, content: string) {
-        console.log(content);
+        console.log('Filename: ' + fileNameWithPath + '\n');
+        console.log('Content: \n' + content + '\n');
     }
 
     public writeMarkdownFiles() {

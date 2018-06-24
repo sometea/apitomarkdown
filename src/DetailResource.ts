@@ -1,5 +1,7 @@
+import { RequestHandler } from "./RequestHandler";
+
 export class DetailResource {
-    constructor(private url: string) { }
+    constructor(private requestHandler: RequestHandler) { }
 
     public accessResource() {
 
