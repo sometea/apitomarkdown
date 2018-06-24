@@ -14,10 +14,12 @@ export class ResourceManager {
     }
 
     public writeMarkdownFiles() {
-        for (let detailResource of this.listResource.iterate()) {
-            detailResource.accessResource();
-            const fileName = this.toCamelCase(detailResource.getTitle()) + '.md';
-            this.writeFile(path.join(this.outputPath, fileName), detailResource.asMarkdown());
-        }
+        this.listResource.iterate().then(detailResources => {
+            for (let detailResource of detailResources) {
+                detailResource.accessResource();
+                const fileName = this.toCamelCase(detailResource.getTitle()) + '.md';
+                this.writeFile(path.join(this.outputPath, fileName), detailResource.asMarkdown());
+            }
+        });
     }
 }

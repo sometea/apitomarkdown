@@ -11,7 +11,7 @@ export class RequestHandler {
         return this.bearerToken;
     }
 
-    public async get(): Promise<object> {
+    public async get(): Promise<any> {
         const response = await request.get(this.url, {
             'auth': {
                 'bearer': this.bearerToken,
