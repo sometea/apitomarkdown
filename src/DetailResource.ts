@@ -30,6 +30,6 @@ export class DetailResource {
     }
 
     public asMarkdown(): string {
-        return JSON.stringify(this.getMetaData()) + '\n' + this.getBody();
+        return JSON.stringify(this.getMetaData()) + '\n\n' + this.getBody();
     }
 }

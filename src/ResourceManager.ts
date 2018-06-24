@@ -13,13 +13,12 @@ export class ResourceManager {
         console.log('Content: \n' + content + '\n');
     }
 
-    public writeMarkdownFiles() {
-        this.listResource.iterate().then(detailResources => {
-            for (let detailResource of detailResources) {
-                detailResource.accessResource();
-                const fileName = this.toCamelCase(detailResource.getTitle()) + '.md';
-                this.writeFile(path.join(this.outputPath, fileName), detailResource.asMarkdown());
-            }
-        });
+    public async writeMarkdownFiles() {
+        const detailResources = await this.listResource.iterate();
+        for (let detailResource of detailResources) {
+            const accessedResource = await detailResource.accessResource();
+            const fileName = this.toCamelCase(accessedResource.getTitle()) + '.md';
+            this.writeFile(path.join(this.outputPath, fileName), accessedResource.asMarkdown());
+        }
     }
 }
