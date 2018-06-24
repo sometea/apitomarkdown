@@ -22,8 +22,7 @@ app.post('/generate', (req, res) => {
     const secretKey = req.body.secretKey;
     let outputPath: string;
     if (!url || !relativeOutputPath || !secretKey) {
-        res.status(400);
-        return res.send('Please specify url, relativeOutputPath and secretKey in the request body.');
+        return res.status(400).send('Please specify url, relativeOutputPath and secretKey in the request body.');
     }
 
     (new ConfigReader()).readConfig('config.json').then(config => {
@@ -38,11 +37,11 @@ app.post('/generate', (req, res) => {
         const requestHandler = new RequestHandler(url, bearerToken);
         const listResource = new ListResource(requestHandler);
         const resourceManager = new ResourceManager(listResource, outputPath);
-        resourceManager.writeMarkdownFiles();
+        return resourceManager.accessResourceAndWriteFiles();
+    }).then(() => {
         return res.send('Markdown generation successful.');
     }).catch(err => {
-        res.status(500);
-        return res.send(err);
+        return res.status(500).send(err);
     });    
 });
 
