@@ -12,10 +12,15 @@ const url = process.argv[2];
 const authenticationUrl = process.argv[3]
 const outputPath = process.argv[4];
 
-const bearerToken = (new AuthenticationManager(authenticationUrl))
-    .authenticate({ username: 'admin@admin.com', password: 'password' })
-    .getToken();
-const requestHandler = new RequestHandler(url, bearerToken);
-const listResource = new ListResource(requestHandler);
-const resourceManager = new ResourceManager(listResource, outputPath);
-resourceManager.writeMarkdownFiles();
+(new AuthenticationManager(authenticationUrl))
+    .authenticate({ username: 'admin@admin.com', password: 'admin' })
+    .then(authHandler => {
+        const bearerToken = authHandler.getToken();
+        const requestHandler = new RequestHandler(url, bearerToken);
+        const listResource = new ListResource(requestHandler);
+        const resourceManager = new ResourceManager(listResource, outputPath);
+        resourceManager.writeMarkdownFiles();
+    })
+    .catch(err => {
+        console.log(err);
+    });

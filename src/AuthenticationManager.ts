@@ -1,3 +1,5 @@
+import request from 'request-promise-native';
+
 export interface AuthData {
     username: string,
     password: string
@@ -12,8 +14,15 @@ export class AuthenticationManager {
         return this.token;
     }
 
-    public authenticate(authData: AuthData): AuthenticationManager {
-        this.token = 'example';
+    public async authenticate(authData: AuthData): Promise<AuthenticationManager> {
+        const response = await request.post(this.authenticationUrl, {
+            body: 'email=' + authData.username + '&password=' + authData.password,
+        })
+        const responseObject = JSON.parse(response);
+        if (!responseObject.success) {
+            throw 'Authentication failed: ' + responseObject.error.message;
+        }
+        this.token = responseObject.data.token;
         return this;
     }
 }
