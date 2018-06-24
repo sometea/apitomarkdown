@@ -3,6 +3,7 @@ import fs from 'fs';
 export interface Config {
     basePath: string,
     authenticationUrl: string,
+    secretKey: string;
     username: string,
     password: string,
 }
