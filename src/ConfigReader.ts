@@ -1,4 +1,7 @@
 import fs from 'fs';
+import { promisify } from 'util';
+
+const readFile = promisify(fs.readFile);
 
 export interface Config {
     basePath: string,
@@ -9,15 +12,8 @@ export interface Config {
 }
 
 export class ConfigReader {
-    public readConfig(filename: string): Promise<Config> {
-        return new Promise((resolve, reject) => {
-            fs.readFile(filename, (err, data) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    resolve(<Config>JSON.parse(data.toString()));
-                }
-            })
-        });
+    public async readConfig(filename: string): Promise<Config> {
+        const data = await readFile(filename);
+        return <Config>JSON.parse(data.toString());
     }
 }
