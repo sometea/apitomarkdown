@@ -16,7 +16,7 @@ app.get('/', (req, res) => {
     return res.send('This is the API-to-markdown server. POST to /generate to start markdown generation.');
 });
 
-app.post('/generate', (req, res) => {
+app.post('/generate', async (req, res) => {
     const url = req.body.url;
     const relativeOutputPath = req.body.relativeOutputPath;
     const secretKey = req.body.secretKey;
@@ -25,24 +25,19 @@ app.post('/generate', (req, res) => {
         return res.status(400).send('Please specify url, relativeOutputPath and secretKey in the request body.');
     }
 
-    (new ConfigReader()).readConfig('config.json').then(config => {
-        if (secretKey !== config.secretKey) {
-            throw 'Secret key not valid';
-        }
-        outputPath = path.join(config.basePath, relativeOutputPath);
-        return (new AuthenticationManager(config.authenticationUrl))
-            .authenticate({ username: config.username, password: config.password })
-    }).then(authHandler => {
-        const bearerToken = authHandler.getToken();
-        const requestHandler = new RequestHandler(url, bearerToken);
-        const listResource = new ListResource(requestHandler);
-        const resourceManager = new ResourceManager(listResource, outputPath);
-        return resourceManager.accessResourceAndWriteFiles();
-    }).then(() => {
-        return res.send('Markdown generation successful.');
-    }).catch(err => {
-        return res.status(500).send(err);
-    });    
+    const config = await (new ConfigReader()).readConfig('config.json');
+    if (secretKey !== config.secretKey) {
+        throw 'Secret key not valid';
+    }
+    outputPath = path.join(config.basePath, relativeOutputPath);
+    const authHandler = await (new AuthenticationManager(config.authenticationUrl))
+        .authenticate({ username: config.username, password: config.password });
+    const bearerToken = authHandler.getToken();
+    const requestHandler = new RequestHandler(url, bearerToken);
+    const listResource = new ListResource(requestHandler);
+    const resourceManager = new ResourceManager(listResource, outputPath);
+    await resourceManager.accessResourceAndWriteFiles();
+    return res.send('Markdown generation successful.');
 });
 
 app.listen(3000, () => {
